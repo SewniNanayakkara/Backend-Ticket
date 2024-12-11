@@ -1,30 +1,32 @@
-const { parentPort } = require("worker_threads");
+const{parentPort} = require("worker_threads")
+var isrunning = true;
 const config = require("./config");
-const Ticket = require("./models/Ticket");
-
-let isRunning = true;
-
-parentPort.on("message", (message) => {
-	if (message === "stop") {
-		isRunning = false;
+parentPort.on("message",(message) =>{
+	if(message=="stop") {
+		isrunning=false
 	}
-});
+})
 
-async function start() {
-	while (isRunning) {
-		const randomNumber = Math.floor(Math.random() * 5);
-		const ticketData = config.getConfig().tickets[randomNumber];
-		const ticket = new Ticket(ticketData.id, ticketData.price, ticketData.show, ticketData.organizer);
-
-		// Send ticket to the main thread
-		parentPort.postMessage({ action: "addTicket", ticket });
-
-		await sleep(config.getConfig().ticketReleaseRate);
-	}
+async function sleepThread(ms){
+	return new Promise((resolve) => setTimeout(resolve,ms))
 }
 
-function sleep(ms) {
-	return new Promise((resolve) => setTimeout(resolve, ms));
+
+async function startTicketing(){
+	try{
+		let configuration = config.getConfig()
+		console.log(configuration)
+		while(isrunning){
+			let random = Math.floor(Math.random() * 5)
+			let ticketConfig = configuration.tickets[random]
+			let ticket = {price:ticketConfig.price, show:ticketConfig.show,organizer:ticketConfig.organizer}
+			parentPort.postMessage({action:"ticketAdd",ticket})
+			await sleepThread(configuration.ticketReleaseRate)
+		}
+	}catch(e){
+		console.log("Error in Ticket Releasing", e)
+	}
+
 }
 
-start();
+startTicketing()

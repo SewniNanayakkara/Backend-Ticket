@@ -1,10 +1,29 @@
-class Ticket {
-	constructor(id, price, show, organizer) {
-		this.id = id;
-		this.show = show;
-		this.price = price;
-		this.organizer = organizer;
-	}
-}
+const {DataTypes} = require('sequelize');
+const sequelize = require('../config/database');
 
-module.exports = Ticket;
+const Ticket = sequelize.define('Ticket',{
+	id:{
+		type:DataTypes.INTEGER,
+		primaryKey:true,
+		autoIncrement:true,
+		allowNull:false
+	},
+	show:{
+		type: DataTypes.STRING,
+		allowNull: false
+	},
+	price: {
+		type: DataTypes.FLOAT,
+		allowNull: false
+	},
+	organizer:{
+		type: DataTypes.STRING,
+		allowNull:false
+	},
+	sold:{
+		type: DataTypes.BOOLEAN,
+		defaultValue: false
+	}
+})
+
+module.exports= Ticket;

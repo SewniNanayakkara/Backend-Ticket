@@ -1,29 +1,34 @@
 const { parentPort, workerData } = require("worker_threads");
 const config = require("./config");
-let isRunning = true;
-const priority = workerData.priority || 0;
+let isrunning = true
+const priority = workerData.priority || 0
 
 parentPort.on("message", (message) => {
 	if (message === "stop") {
-		isRunning = false;
+		isrunning = false
 	} else if (message.action === "ticketPurchased") {
-		const ticket = message.ticket;
-		console.log(`Customer with priority: ${priority} purchased a ticket: ${ticket.id}`);
+		const ticket = message.ticket
+		console.log(`Customer with priority: ${priority} bought ticket: ${ticket.id}`)
 	} else if (message.action === "noTicket") {
-		console.log(`Customer with priority: ${priority} - No tickets available for purchase.`);
+		console.log(`Customer with priority: ${priority} - No tickets available.`)
 	}
-});
+})
 
 async function start() {
-	while (isRunning) {
-		// Request to buy a ticket
-		parentPort.postMessage({ action: "buyTicket", priority });
-		await sleep(config.getConfig().customerRetrievalRate);
+	try{
+	while (isrunning) {
+		parentPort.postMessage({ action: "buyTicket", priority })
+		let configuration = config.getConfig()
+		await sleep(configuration.customerRetrievalRate)
 	}
+	}catch(e){
+		console.log("error in buying ticket", e)
+	}
+
 }
 
 function sleep(ms) {
-	return new Promise((resolve) => setTimeout(resolve, ms));
+	return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-start();
+start()

@@ -14,7 +14,9 @@
     "async-mutex": "^0.5.0",
     "express": "^4.21.1",
     "js-priority-queue": "^0.1.5",
+    "sequelize": "^6.37.5",
     "socket.io": "^4.8.1",
+    "sqlite3": "^5.1.7",
     "winston": "^3.17.0"
   },
   "devDependencies": {
