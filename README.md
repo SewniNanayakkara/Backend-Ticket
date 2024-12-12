@@ -37,7 +37,6 @@
         <ol>
             <li><strong>Java:</strong> Direct implementation using core Java for threading and synchronization. Optional integration with JavaFX for GUI.</li>
             <li><strong>Node.js:</strong> Implement backend logic and expose APIs for a web-based frontend.</li>
-            <li><strong>Spring Boot:</strong> Build a robust backend with RESTful endpoints for GUI interactions.</li>
         </ol>
         <h2>Deliverables</h2>
         <ul>
