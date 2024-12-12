@@ -1,14 +1,17 @@
-const ticket = require('./Ticket')
-const customer = require('./Customer')
-const vendor = require('./Vendor')
-const ticketSales = require('./TicketSales')
-const configuration = require("./Ticket");
-ticket.hasMany(ticketSales,{foreignKey:'ticket_id'})
-ticketSales.belongsTo(ticket,{foreignKey:'ticket_id'})
-customer.hasMany(ticketSales,{foreignKey:'customer_id'})
-ticketSales.belongsTo(customer,{foreignKey:'customer_id'})
+const Ticket = require('./Ticket')
+const Customer = require('./Customer')
+const Vendor = require('./Vendor')
+const TicketSales = require('./TicketSales')
+const Configuration = require("./Ticket");
+Ticket.hasMany(TicketSales, { foreignKey: "ticket_id" });
+TicketSales.belongsTo(Ticket, { foreignKey: "ticket_id" });
+Customer.hasMany(TicketSales, { foreignKey: "customer_id" });
+TicketSales.belongsTo(Customer, { foreignKey: "customer_id" });
 
 module.exports = {
-  ticket,
-  customer,vendor,ticketSales,configuration
-}
+	Ticket,
+	Customer,
+	Vendor,
+	TicketSales,
+	Configuration,
+};

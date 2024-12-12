@@ -16,16 +16,16 @@ app.use(express.json());
 const io = socketIo(server, {
 	cors: {
 		origin: "http://localhost:3001",
-		methods: ["GET", "POST"],
+		methods: ["GET", "POST", "DELETE"],
 		credentials: true,
 	},
-})
+});
 // Configure CORS options
 const corsOptions = {
-  origin: "http://localhost:3001",
-  methods: ["GET", "POST"],
-  credentials: true,
-}
+	origin: "http://localhost:3001",
+	methods: ["GET", "POST", "DELETE"],
+	credentials: true,
+};
 
 // Use the CORS middleware with options
 app.use(cors(corsOptions))
@@ -60,7 +60,7 @@ app.post('/customer/add', async (req, res) => {
     const { priority } = req.body
     const customerId = Date.now().toString() + Math.random().toString(36).substr(2, 9)
     const customerData = { id: customerId, priority }
-    startCustomer(customerData)
+    await startCustomer(customerData)
     res.status(200).json(customerData)
   } catch (e) {
     console.log(`Error creating customer: ${e}`);
@@ -70,7 +70,9 @@ app.post('/customer/add', async (req, res) => {
 
 app.get("/customer/all", async (req, res) => {
 	try {
-		let customers = await Customer.findAll({ ticket_bought:false });
+	   let customers = await Customer.findAll({
+      where: { ticket_bought: false }
+    });;
 		res.status(200).json(customers);
 	} catch (e) {
 		console.log(`Error creating customer: ${e}`);
@@ -82,7 +84,7 @@ app.get("/customer/all", async (req, res) => {
 app.delete('/customer/:id', async (req, res) => {
   try {
     const customerId = req.params.id
-    stopCustomer(customerId)
+    await stopCustomer(customerId)
     res.json({ message: 'Customer stopped.' })
   } catch (e) {
     console.log(`Error deleting customer: ${e}`)
@@ -91,20 +93,27 @@ app.delete('/customer/:id', async (req, res) => {
 })
 
 // Start customer worker
-function startCustomer(customerData) {
+async function startCustomer(customerData) {
   const customerWorker = new Worker('./customer.js', {
     workerData: { priority: customerData.priority },
   });
   customerWorkers.set(customerData.id, customerWorker)
+  await Customer.create({ id: customerData.id, priority: customerData.priority });
   console.log(`Customer ${customerData.id} started.`)
 }
 
 // Stop customer worker
-function stopCustomer(customerId) {
+async function stopCustomer(customerId) {
   const worker = customerWorkers.get(customerId)
   if (worker) {
     worker.postMessage('stop')
     customerWorkers.delete(customerId)
+    try {
+			await Customer.destroy({ where: { id: customerId } });
+			console.log(`Customer ${customerId} stopped and removed from database.`);
+		} catch (error) {
+			console.error(`Error removing customer ${customerId} from database:`, error);
+		}
     console.log(`Customer ${customerId} stopped.`)
   }
 }
