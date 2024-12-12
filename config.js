@@ -1,3 +1,4 @@
+// Configuration object
 let configuration = {
 	totalTickets: 1000,
 	ticketReleaseRate: 2000,
@@ -12,12 +13,15 @@ let configuration = {
 	],
 }
 
+// Update configuration
 function setConfig(newConfig) {
 	configuration = { ...configuration, ...newConfig };
 }
 
+// Get configuration
 function getConfig() {
 	return configuration;
 }
 
+// Export functions
 module.exports = { setConfig, getConfig };
